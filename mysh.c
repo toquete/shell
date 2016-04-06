@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <assert.h>
+#include <stdlib.h>
 
 #define MAX_LEN 100
+#define SPACE 32
 
 void type_prompt()
 {
@@ -21,37 +24,62 @@ void type_prompt()
     fprintf(stdout, "$ ");
 }
 
-void read_command(char* command, char** params)
+void read_command(char** command, char*** params)
 {
-    int i = 0;
-    char* word;
+    int count = 0;
+    char* tmp;
+    char** result;
+    const char delim[] = " ";
 
-    fgets(command,MAX_LEN ,stdin);
-    command[strlen(command)-1] = '\0';
+    tmp = (char*)malloc(sizeof(char));
 
-    if (!(strcmp(command, "exit")))
+    fgets(tmp, MAX_LEN, stdin);
+    tmp[strlen(tmp)-1] = '\0';
+
+    if (!(strcmp(tmp, "exit")))
         exit(1);
 
-    word = strtok(command, " ");
-    strcpy(command,word);
+    *command = tmp;
 
-    while (word != NULL){
-        word = strtok(NULL, " ");
-        params[i] = word;
-        i++;
+    while (*tmp)
+    {
+        if ((*tmp) == SPACE)
+          count++;
+        tmp++;
     }
+
+    count += 2;
+
+    result = (char**)malloc(sizeof(char*) * count);
+
+    if (result)
+    {
+        size_t idx  = 0;
+        char* token = strtok(*(command), delim);
+
+        while (token)
+        {
+            assert(idx < count);
+            *(result + idx++) = strdup(token);
+            token = strtok(NULL, delim);
+        }
+        assert(idx == count - 1);
+        *(result + idx) = 0;
+    }
+
+    *params = result;
 }
 
 int main(void)
 {
-    char command[MAX_LEN];
-    char params[MAX_LEN][MAX_LEN];
+    char* command;
+    char** params;
     int status;
     pid_t pid;
 
     while(1){
         type_prompt();
-        read_command(command,params);
+        read_command(&command, &params);
 
         pid = fork();
         if(pid < 0){
@@ -70,4 +98,3 @@ int main(void)
     }
     return 0;
 }
-
