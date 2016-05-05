@@ -121,10 +121,10 @@ int main(void)
     while(1){
         type_prompt();
 
-        if((ret = getchar()) == EOF){
+        /*if((ret = getchar()) == EOF){
             printf("\n");
             exit(1);
-        }
+        }*/
 
         read_command(&command, &params);
 
