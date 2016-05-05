@@ -13,16 +13,16 @@
 
 void removeSubstring(char *s,const char *toremove)
 {
-  while( s=strstr(s,toremove) )
-    memmove(s,s+strlen(toremove),1+strlen(s+strlen(toremove)));
+  while(s = strstr(s,toremove))
+      memmove(s,s+strlen(toremove),1+strlen(s+strlen(toremove)));
 }
 
 void replace_home_dir(char *command) {
     //if (strcspn(command, "~") == strlen(command))
     //    return;
 
-    char *homedir;
-    homedir = getenv("HOME");
+    char homedir[100];
+    strcpy(homedir, getenv("HOME"));
 
     char *pch;
     pch = strstr(command, homedir);
