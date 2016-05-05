@@ -6,9 +6,33 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <pwd.h>
 
 #define MAX_LEN 100
 #define SPACE 32
+
+void removeSubstring(char *s,const char *toremove)
+{
+  while( s=strstr(s,toremove) )
+    memmove(s,s+strlen(toremove),1+strlen(s+strlen(toremove)));
+}
+
+void replace_home_dir(char *command) {
+    //if (strcspn(command, "~") == strlen(command))
+    //    return;
+
+    char *homedir;
+    homedir = getenv("HOME");
+
+    char *pch;
+    pch = strstr(command, homedir);
+    if(pch != NULL){
+        removeSubstring(command,homedir);
+        strcpy(homedir,"~");
+        strcat(homedir,command);
+        strcpy(command,homedir);
+    }
+}
 
 void type_prompt()
 {
@@ -17,6 +41,8 @@ void type_prompt()
     gethostname(hostName, MAX_LEN);
     getlogin_r(userName, MAX_LEN);
     getcwd(curDir, MAX_LEN);
+
+    replace_home_dir(curDir);
 
     fprintf(stdout, "[MySh] ");
     fprintf(stdout, userName);
