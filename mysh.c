@@ -11,26 +11,23 @@
 #define MAX_LEN 100
 #define SPACE 32
 
-void removeSubstring(char *s,const char *toremove)
+void removeSubstring(char *s, const char *toremove)
 {
-  while(s = strstr(s,toremove))
-      memmove(s,s+strlen(toremove),1+strlen(s+strlen(toremove)));
+    while (s = strstr(s, toremove))
+        memmove(s, s + strlen(toremove), 1 + strlen(s + strlen(toremove)));
 }
 
 void replace_home_dir(char *command) {
-    //if (strcspn(command, "~") == strlen(command))
-    //    return;
-
     char homedir[100];
     strcpy(homedir, getenv("HOME"));
 
     char *pch;
     pch = strstr(command, homedir);
-    if(pch != NULL){
-        removeSubstring(command,homedir);
-        strcpy(homedir,"~");
-        strcat(homedir,command);
-        strcpy(command,homedir);
+    if (pch != NULL) {
+        removeSubstring(command, homedir);
+        strcpy(homedir, "~");
+        strcat(homedir, command);
+        strcpy(command, homedir);
     }
 }
 
@@ -45,11 +42,11 @@ void type_prompt()
     replace_home_dir(curDir);
 
     fprintf(stdout, "[MySh] ");
-    fprintf(stdout, userName);
+    fprintf(stdout, "%s", userName);
     fprintf(stdout, "@");
-    fprintf(stdout, hostName);
+    fprintf(stdout, "%s", hostName);
     fprintf(stdout, ":");
-    fprintf(stdout, curDir);
+    fprintf(stdout, "%s", curDir);
     fprintf(stdout, "$ ");
 
     fflush(stdout);
@@ -65,7 +62,7 @@ void read_command(char** command, char*** params)
     tmp = (char*)malloc(sizeof(char));
 
     fgets(tmp, MAX_LEN, stdin);
-    tmp[strlen(tmp)-1] = '\0';
+    tmp[strlen(tmp) - 1] = '\0';
 
     if (!(strcmp(tmp, "exit")))
         exit(1);
@@ -75,7 +72,7 @@ void read_command(char** command, char*** params)
     while (*tmp)
     {
         if ((*tmp) == SPACE)
-          count++;
+            count++;
         tmp++;
     }
 
@@ -118,7 +115,7 @@ int main(void)
     signal(SIGINT, &signal_handler);
     signal(SIGTSTP, &signal_handler);
 
-    while(1){
+    while (1) {
         type_prompt();
 
         /*if((ret = getchar()) == EOF){
@@ -139,14 +136,14 @@ int main(void)
         }
 
         pid = fork();
-        if(pid < 0){
-           fprintf(stderr, "Unable to fork");
-           continue;
+        if (pid < 0) {
+            fprintf(stderr, "Unable to fork");
+            continue;
         }
 
-        if(pid != 0){
+        if (pid != 0) {
             waitpid(-1, &status, 0);
-        }else{
+        } else {
             ret = execvp(command, params);
 
             if (ret)
