@@ -146,8 +146,10 @@ int main(void)
         } else {
             ret = execvp(command, params);
 
-            if (ret)
+            if (ret) {
                 fprintf(stderr, "%s: command not found\n", command);
+                _exit(0);
+            }
         }
 
     }
